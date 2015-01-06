@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="/static/jquery-1.11.2.min.js"></script>
+    <script src="/static/csrf.js"></script>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+    <table class="table table-bordered text-center">
+      <tr>
+        <td></td>
+        <td>时间</td><td>域名</td><td>URL</td><td>目的IP</td><td>目的端口</td>
+	<td>协议</td><td>威胁值</td><td>可信度</td>
+	<td>详情</td><td>状态</td><td>提交</td>
+      </tr>    
+    {% for item in object_list %}
+      <tr>
+        <td><input type="checkbox" class="check"/></td>
+        <td>{{item.create_time|default_if_none:""}}</td>
+	<td>{{item.info0|default_if_none:""}}</td>
+	<td>{{item.info1|default_if_none:""}}</td>
+	<td>{{item.dip|default_if_none:""}}</td>
+	<td>{{item.dport}}</td>
+   	<td>{{item.protocol|default_if_none:""}}</td>
+	<td>{{item.threat|default_if_none:""}}</td>
+	<td>{{item.risk|default_if_none:""}}</td>
+        <td style="display:none">病毒检测精度:&nbsp;&nbsp;{{item.av_accurancy|default_if_none:""}}</td>
+        <td style="display:none">病毒类型:&nbsp;&nbsp;{{item.av_type|default_if_none:""}}</td>
+        <td style="display:none">病毒名称:&nbsp;&nbsp;{{item.av_name|default_if_none:""}}</td>
+        <td style="display:none">引用:&nbsp;&nbsp;{{item.referer|default_if_none:""}}</td>
+        <td style="display:none">URI:&nbsp;&nbsp;{{item.uri|default_if_none:""}}</td>
+        <td style="display:none">Intern目录:&nbsp;&nbsp;{{item.intern_path|default_if_none:""}}</td>
+        <td style="display:none">告警目录:&nbsp;&nbsp;{{item.parent|default_if_none:""}}</td>
+        <td style="display:none">父文件Hash:&nbsp;&nbsp;{{item.parent_hash|default_if_none:""}}</td>
+        <td style="display:none">父文件:&nbsp;&nbsp;{{item.parent_file|default_if_none:""}}</td>
+        <td style="display:none">父UUID:&nbsp;&nbsp;{{item.parent_uuid|default_if_none:""}}</td>
+        <td style="display:none">样本路径:&nbsp;&nbsp;{{item.path|default_if_none:""}}</td>
+        <td style="display:none">文件类型:&nbsp;&nbsp;{{item.file_type|default_if_none:""}}</td>
+        <td style="display:none">文件大小:&nbsp;&nbsp;{{item.file_size|default_if_none:""}}</td>
+        <td style="display:none">文件Sha:&nbsp;&nbsp;{{item.file_sha|default_if_none:""}}</td>
+        <td style="display:none">文件名:&nbsp;&nbsp;{{item.file_name|default_if_none:""}}</td>
+        <td style="display:none">文件Hash:&nbsp;&nbsp;{{item.file_hash|default_if_none:""}}</td>
+        <td style="display:none">样本UUID:&nbsp;&nbsp;{{item.uuid|default_if_none:""}}</td>
+        <td style="display:none">目的PORT:&nbsp;&nbsp;{{item.dport|default_if_none:""}}</td>
+        <td style="display:none">目的IP:&nbsp;&nbsp;{{item.dip|default_if_none:""}}</td>
+        <td style="display:none">源PORT:&nbsp;&nbsp;{{item.sport|default_if_none:""}}</td>
+        <td style="display:none">源IP:&nbsp;&nbsp;{{item.sip|default_if_none:""}}</td>
+        <td style="display:none">链接:&nbsp;&nbsp;{{item.info1|default_if_none:""}}</td>
+        <td style="display:none">域名:&nbsp;&nbsp;{{item.info0|default_if_none:""}}</td>
+        <td style="display:none">检测环境:&nbsp;&nbsp;{{item.env|default_if_none:""}}</td>
+        <td style="display:none">告警摘要:&nbsp;&nbsp;{{item.detail|default_if_none:""}}</td>
+        <td style="display:none">协议:&nbsp;&nbsp;{{item.protocol|default_if_none:""}}</td>
+        <td style="display:none">应用:&nbsp;&nbsp;{{item.app|default_if_none:""}}</td>
+        <td style="display:none">事件类型:&nbsp;&nbsp;{{item.event_type|default_if_none:""}}</td>
+        <td style="display:none">过滤状态:&nbsp;&nbsp;
+          {% ifequal item.filter_status 0 %}
+          未过滤
+          {% endifequal %}
+          {% ifequal item.filter_status 1 %}
+          自动过滤--不加入信誉库
+          {% endifequal %}
+          {% ifequal item.filter_status 2 %}
+          自动过滤--加入信誉库
+          {% endifequal %}
+          {% ifequal item.filter_status 3 %}
+          人工审核--不加入信誉库
+          {% endifequal %}
+          {% ifequal item.filter_status 4 %}
+          人工审核--加入信誉库
+          {% endifequal %}
+        </td>
+	<td><button type="button" data-toggle="modal" data-target="#detail" class="more">详情</button></td>
+	<td>
+	  <select name="filter_val" class="filter_sta">
+	    {% ifequal item.filter_status 0 %}
+	      <option value="{{item.filter_status}}">
+	      未过滤</option>
+	    {% endifequal %}
+	    {% ifequal item.filter_status 1 %}
+	      <option value="{{item.filter_status}}">
+	      自动--不添加</option>
+	    {% endifequal %}
+	    {% ifequal item.filter_status 2 %}
+	      <option value="{{item.filter_status}}">
+	      自动--添加</option>
+	    {% endifequal %}
+	    {% ifequal item.filter_status 3 %}
+	      <option value="{{item.filter_status}}">
+	      人工--不添加</option>
+	    {% endifequal %}
+	    {% ifequal item.filter_status 4 %}
+	      <option value="{{item.filter_status}}">
+	      人工--添加</option>
+	    {% endifequal %}
+	    <option value="3">人工--不添加</option>
+	    <option value="4">人工--添加</option>
+	  </select>
+	</td>
+	<td><button type="submit" class="sub">提交</button></td>
+	<td style="display:none">{{item.temp_id}}</td>
+      </tr>
+    {% endfor %}
+    </table>
+
+  <!-- Modal -->
+  <div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+          <h4 class="modal-title" id="myModalLabel">告警详情</h4>
+        </div>
+        <div class="modal-body information">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Show all information-->
+  <script>
+    $(function(){
+      $(".more").click(function(){
+        var show = $(this).parent().prev();
+	var display = "";
+        for( var i=1; i<=29; i++ )
+	{
+	  display += "<div class='col-md-12'>"+show.text()+"</div><br><br>"
+	  show = show.prev();
+	}
+        $(".information").html(display);
+      });
+    });
+  </script>
+
+
+  <!--AJAX post fileter_status and change filter_status-->
+  <script>
+    $(function(){
+      $(".sub").click(function(){
+        var idnum = $(this).parent().next().text();
+	var statusval = $(this).parent().prev().children().val();
+        $.post(
+	  "/update/",
+	  {
+	    temp_id : idnum,
+	    filter_status : statusval,
+	  },
+	  function(){
+	    location.reload(true);
+	  }
+	);
+      });
+    });
+  </script>
+
+  <!--AJAX process checkbox-->
+  <script>
+    $(function(){
+      $("").click(function(){
+        var idnum = $(this).parent().next().text();
+	var statusval = $(this).parent().prev().children().val();
+        $.post(
+	  "/update/",
+	  {
+	    temp_id : idnum,
+	    filter_status : statusval,
+	  },
+	  function(){
+	    location.reload(true);
+	  }
+	);
+      });
+    });
+  </script>
+
+  </body>
+</html>

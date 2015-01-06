@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Demo Page</title>
+    </head>
+    <body>
+	<form action="/update/" method="GET">
+	    <input type="submit" value="更新SVN">
+	    <p>{{ update_status }}</p>
+	</form><br>
+
+	<form action="/onoff/" method="GET">
+	    <input type="submit" value="配置开关">
+	    <p>{{ switch_status }}</p>
+	</form>
+    </body>
+</html>

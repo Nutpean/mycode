@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- import jquery and bootstrap  加载jquery和bootstrap库 -->
+    <script src="/static/jquery-1.11.2.min.js"></script>
+    <script src="/static/csrf.js"></script>
+    <link href="/static/bootstrap.min.css" rel="stylesheet">
+    <script src="/static/bootstrap.min.js"></script>
+  </head>
+
+  <body>
+    <!-- title 标题栏 -->
+    <nav class="navbar navbar-default" role="navigation">
+      <p class="navbar-text">TAC人工过滤</p>
+    </nav>
+    
+    <table class="table table-bordered text-center">
+      <tr>
+        <td><button type="button" id="checkall">全选</button></td><td>时间</td><td>域名</td><td>URL</td><td>目的IP</td><td>目的端口</td>
+        <td>协议</td><td>威胁值</td><td>可信度</td><td>详情</td><td>状态</td><td>提交</td>
+      </tr>    
+      {% for item in contacts %}
+      <tr>
+        <td><input type="checkbox" name="check"/></td>
+        <td>{{item.create_time|default_if_none:""}}</td>
+        <td>{{item.info0|default_if_none:""}}</td>
+        <td>{{item.info1|default_if_none:""}}</td>
+        <td>{{item.dip|default_if_none:""}}</td>
+        <td>{{item.dport}}</td>
+   	  <td>{{item.protocol|default_if_none:""}}</td>
+   	  <td>{{item.threat|default_if_none:""}}</td>
+   	  <td>{{item.risk|default_if_none:""}}</td>
+        <td style="display:none">病毒检测精度:&nbsp;&nbsp;{{item.av_accurancy|default_if_none:""}}</td>
+        <td style="display:none">病毒类型:&nbsp;&nbsp;{{item.av_type|default_if_none:""}}</td>
+        <td style="display:none">病毒名称:&nbsp;&nbsp;{{item.av_name|default_if_none:""}}</td>
+        <td style="display:none">引用:&nbsp;&nbsp;{{item.referer|default_if_none:""}}</td>
+        <td style="display:none">URI:&nbsp;&nbsp;{{item.uri|default_if_none:""}}</td>
+        <td style="display:none">Intern目录:&nbsp;&nbsp;{{item.intern_path|default_if_none:""}}</td>
+        <td style="display:none">告警目录:&nbsp;&nbsp;{{item.parent|default_if_none:""}}</td>
+        <td style="display:none">父文件Hash:&nbsp;&nbsp;{{item.parent_hash|default_if_none:""}}</td>
+        <td style="display:none">父文件:&nbsp;&nbsp;{{item.parent_file|default_if_none:""}}</td>
+        <td style="display:none">父UUID:&nbsp;&nbsp;{{item.parent_uuid|default_if_none:""}}</td>
+        <td style="display:none">样本路径:&nbsp;&nbsp;{{item.path|default_if_none:""}}</td>
+        <td style="display:none">文件类型:&nbsp;&nbsp;{{item.file_type|default_if_none:""}}</td>
+        <td style="display:none">文件大小:&nbsp;&nbsp;{{item.file_size|default_if_none:""}}</td>
+        <td style="display:none">文件Sha:&nbsp;&nbsp;{{item.file_sha|default_if_none:""}}</td>
+        <td style="display:none">文件名:&nbsp;&nbsp;{{item.file_name|default_if_none:""}}</td>
+        <td style="display:none">文件Hash:&nbsp;&nbsp;{{item.file_hash|default_if_none:""}}</td>
+        <td style="display:none">样本UUID:&nbsp;&nbsp;{{item.uuid|default_if_none:""}}</td>
+        <td style="display:none">目的PORT:&nbsp;&nbsp;{{item.dport|default_if_none:""}}</td>
+        <td style="display:none">目的IP:&nbsp;&nbsp;{{item.dip|default_if_none:""}}</td>
+        <td style="display:none">源PORT:&nbsp;&nbsp;{{item.sport|default_if_none:""}}</td>
+        <td style="display:none">源IP:&nbsp;&nbsp;{{item.sip|default_if_none:""}}</td>
+        <td style="display:none">链接:&nbsp;&nbsp;{{item.info1|default_if_none:""}}</td>
+        <td style="display:none">域名:&nbsp;&nbsp;{{item.info0|default_if_none:""}}</td>
+        <td style="display:none">检测环境:&nbsp;&nbsp;{{item.env|default_if_none:""}}</td>
+        <td style="display:none">告警摘要:&nbsp;&nbsp;{{item.detail|default_if_none:""}}</td>
+        <td style="display:none">协议:&nbsp;&nbsp;{{item.protocol|default_if_none:""}}</td>
+        <td style="display:none">应用:&nbsp;&nbsp;{{item.app|default_if_none:""}}</td>
+        <td style="display:none">事件类型:&nbsp;&nbsp;{{item.event_type|default_if_none:""}}</td>
+        <td style="display:none">过滤状态:&nbsp;&nbsp;
+          {% ifequal item.filter_status 0 %} 未过滤  {% endifequal %}
+          {% ifequal item.filter_status 1 %} 自动过滤--不加入信誉库  {% endifequal %}
+          {% ifequal item.filter_status 2 %} 自动过滤--加入信誉库  {% endifequal %}
+          {% ifequal item.filter_status 3 %} 人工审核--不加入信誉库  {% endifequal %}
+          {% ifequal item.filter_status 4 %} 人工审核--加入信誉库  {% endifequal %}
+        </td>
+	     <td><button type="button" data-toggle="modal" data-target="#detail" class="moredetail">详情</button></td>
+	     <td>
+	       <select name="filter_val" class="filter_sta">
+	         {% ifequal item.filter_status 0 %}<option value="{{item.filter_status}}">未过滤</option>{% endifequal %}
+	         {% ifequal item.filter_status 1 %}<option value="{{item.filter_status}}">自动--不添加</option>{% endifequal %}
+	         {% ifequal item.filter_status 2 %}<option value="{{item.filter_status}}">自动--添加</option>{% endifequal %}
+	         {% ifequal item.filter_status 3 %}<option value="{{item.filter_status}}"> 人工--不添加</option>{% endifequal %}
+	         {% ifequal item.filter_status 4 %}<option value="{{item.filter_status}}">人工--添加</option>{% endifequal %}
+	         <option value="3" class="manualdelete">人工--不添加</option>
+	         <option value="4" class="manualadd">人工--添加</option>
+	       </select>
+        </td>
+	     <td><button type="submit" class="subone">提交</button></td>
+	     <td style="display:none">{{item.temp_id}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+    <!-- click checkbox show this div 点击check出现下面的div内容  -->
+    <div class="alert alert-success alert-dismissible checkaction" role="alert" hidden>
+      <button type="button" class="close" data-dismiss="alert"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+      <button type="button" id="checkadd" class="btn btn-default">添加到信誉库</button>
+      <button type="button" id="checkdelete" class="btn btn-default">不添加到信誉库</button>
+    </div>
+
+    <!-- click detail show this modal 详情显示按钮显示详情  -->
+    <div class="modal fade" id="detail" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">告警详情</h4>
+          </div>
+          <div class="modal-body information">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- show page namber 显示分页 -->
+    <nav>
+      <ul class="pagination">
+        {% for page_number in contacts.paginator.page_range %}
+          {% ifequal page_number contacts.number %}
+            <li class="active"><a>{{ page_number }}</a></li>
+          {% else %}
+            <li><a href="?page={{ page_number }}">{{ page_number }}</a></li>
+          {% endifequal %}
+        {% endfor %}
+      </ul>
+    </nav>
+    
+  </body>
+
+  <!-- ajax submit checked items 异步提交checked项目 -->
+  <script>
+    $(function(){
+      var filter_val = 0;
+      $('[name=check]:checkbox').click(function(){
+        $(".checkaction").show();
+      });
+      
+      $("#checkadd").click(function(){
+        filter_val = 2;
+        $('[name=check]:checkbox').each(function(){
+	       if( this.checked == true ){
+	         id_val = $(this).parent();
+	         for( var i=0; i<41; i++ )
+	         { id_val = id_val.next(); }
+            var idnum = id_val.text();
+            $.post(
+	           "/update/",
+	           {
+	             temp_id : idnum,
+	             filter_status : filter_val,
+	           },
+	           function(){
+	             location.reload(true);
+	           }
+	         );
+	       }
+	     });
+      });
+        
+      $("#checkdelete").click(function(){
+        filter_val = 1;
+        $('[name=check]:checkbox').each(function(){
+	       if( this.checked == true ){
+	         id_val = $(this).parent();
+	         for( var i=0; i<41; i++ )
+	         { id_val = id_val.next(); }
+            var idnum = id_val.text();
+            $.post(
+	           "/update/",
+	           {
+	             temp_id : idnum,
+	             filter_status : filter_val,
+	           },
+	           function(){
+	             location.reload(true);
+	           }
+	         );
+	       }
+	     });
+      });       
+    });
+  </script>
+
+  <!-- Show all information 详情显示所有信息  -->
+  <script>
+    $(function(){
+      $(".moredetail").click(function(){
+        var show = $(this).parent().prev();
+	     var display = "";
+        for( var i=1; i<=29; i++ )
+	     {
+	       display += "<div class='col-md-12'>"+show.text()+"</div><br><br>"
+	       show = show.prev();
+	     }
+        $(".information").html(display);
+      });
+    });
+  </script>
+
+  <!--AJAX post fileter_status and change filter_status 异步提交修改情况  -->
+  <script>
+    $(function(){
+      $(".subone").click(function(){
+        var idnum = $(this).parent().next().text();
+	     var statusval = $(this).parent().prev().children().val();
+        $.post(
+	       "/update/",
+	       {
+	         temp_id : idnum,
+	         filter_status : statusval,
+	       },
+	       function(){
+	         location.reload(true);
+	       }
+	     );
+      });
+    });
+  </script>
+
+  <!--AJAX process checkbox-->
+  <script>
+    $(function(){
+      $("#checkall").click(function(){
+        $(".checkaction").show();
+        $('[name=check]:checkbox').each(function(){
+          this.checked = !this.checked;
+        });
+      });
+    });
+  </script>
+
+</html>
